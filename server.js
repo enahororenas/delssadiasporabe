@@ -25,8 +25,9 @@ app.use(
 	})
 );
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-app.use(express.static(path.resolve(__dirname, './client/build')))
+//const __dirname = dirname(fileURLToPath(import.meta.url))
+//app.use(express.static(path.resolve(__dirname, './client/build')))
+//app.get('*', (req, res) => {res.sendFile(path.resolve(__dirname, './client/build', 'index.html'))})
 
 app.use(express.json({limit: '50mb'}))
 
@@ -41,7 +42,7 @@ app.use('/api/dias/members',authenticateUser,jobRouter)
 app.use('/api/dias/new',authenticateUser,authRouter)
 app.use('/api/dias/comment',authenticateUser,jobRouter)
 
-app.get('*', (req, res) => {res.sendFile(path.resolve(__dirname, './client/build', 'index.html'))})
+
 
 app.use(notFoundMiddleware)
 //error in any of the routes function
