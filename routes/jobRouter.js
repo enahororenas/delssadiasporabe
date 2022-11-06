@@ -1,6 +1,7 @@
 import express from 'express'
 import {createComment,sendEmail,addImage,getAllImages,updateComment,deleteComment,addLeader,getAllExco,
-    addNews,getNews,getAllMembers,deleteNews,getComments} from '../controllers/jobsController.js'
+    addNews,getNews,getAllMembers,deleteNews,getComments,addProject,getProject,editproject,deleteProject,
+} from '../controllers/jobsController.js'
 const router = express.Router()
 router.route('/sendemail').post(sendEmail)
 router.route('/addimage').post(addImage).get(getAllImages)
@@ -12,6 +13,9 @@ router.route('/get').post(getComments)
 router.route('/update').post(updateComment)
 router.route('/delete').post(deleteComment)
 router.route('/addleader').post(addLeader).get(getAllExco)
+router.route('/addproject').post(addProject).get(getProject)
+router.route('/editproject').post(editproject)
+router.route('/deleteproject').post(deleteProject)
 
 
 export default router
