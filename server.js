@@ -41,7 +41,7 @@ app.use('/api/dias/news',authenticateUser,jobRouter)
 app.use('/api/dias/members',authenticateUser,jobRouter)
 app.use('/api/dias/new',authenticateUser,authRouter)
 app.use('/api/dias/comment',authenticateUser,jobRouter)
-
+app.use('/api/dias/project',authenticateUser,jobRouter)
 
 
 app.use(notFoundMiddleware)
