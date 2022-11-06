@@ -1,6 +1,7 @@
 import News from "../models/News.js"
 import Exco from '../models/Executive.js'
 import User from '../models/User.js'
+import Project from "../models/Project.js"
 import Comment from "../models/Comment.js"
 import { StatusCodes } from 'http-status-codes'
 import {BadRequestError, NotFoundError} from '../errors/index.js'
@@ -374,5 +375,64 @@ const addNews = async(req,res) => {
     }
 //res.send('News Item Added')
 }
-export {createComment,getAllExco, updateJob, updateComment,sendEmail,deleteComment,addLeader
-    ,addImage,getAllImages,addNews,getNews,getAllMembers,deleteNews,getComments}
+
+const addProject = async(req,res) => {
+    const {topic,completed,total,unit} = req.body
+    if(!topic||!completed||!total||!unit){ throw new BadRequestError('Please provide all values')}
+    const projectAlreadyExists = await Project.findOne({topic})
+    if(projectAlreadyExists) {throw new BadRequestError('Project previously added')}
+    try{
+        const new_project = await Project.create({topic,completed,total,unit,createdBy:req.user.userId})
+        res.status(StatusCodes.CREATED).json({ msg: 'Successfuly Added New Project to DB'})
+    } catch(error){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
+    } 
+}
+
+const getProject =async(req,res) =>{
+    try {const response = await Project.find({})
+    const projects = response.map((item) => ({
+        topic: item.topic,
+        completed: item.completed,
+        unit:item.unit,
+        total:item.total,
+    }))
+    res.status(StatusCodes.OK).json({projects,totalProject:projects.length})
+    }catch(error){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
+    }
+}
+
+
+const deleteProject =async(req,res) =>{
+    const {topic,completed,total,unit} = req.body
+    if(!topic||!completed||!total||!unit){ throw new BadRequestError('Please provide all values')}
+    const projectAlreadyExists = await Project.findOne({topic})
+    if(!projectAlreadyExists) {throw new BadRequestError('This project does not exist')}
+    try{
+        await projectAlreadyExists.remove()
+        res.status(StatusCodes.CREATED).json({ msg: 'Successfuly Deleted Project'})
+    } catch(error){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
+    }
+}
+
+const editproject =async(req,res) =>{
+    const {topic,completed,total,unit} = req.body
+    if(!topic||!completed||!total||!unit){ throw new BadRequestError('Please provide all values')}
+    const projectAlreadyExists = await Project.findOne({topic})
+    if(!projectAlreadyExists) {throw new BadRequestError('This project does not exist')}
+    projectAlreadyExists.completed = completed
+    projectAlreadyExists.unit = unit
+    projectAlreadyExists.total = total
+    try{
+        await projectAlreadyExists.save()
+        res.status(StatusCodes.CREATED).json({ msg: 'Successfuly Updated Project'})
+    } catch(error){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
+    } 
+}
+
+export {createComment,getAllExco, updateJob, updateComment,sendEmail,deleteComment,addLeader,addProject,
+    addImage,getAllImages,addNews,getNews,getAllMembers,deleteNews,getComments,getProject,editproject,deleteProject,
+}
