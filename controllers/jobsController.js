@@ -3,6 +3,7 @@ import Exco from '../models/Executive.js'
 import User from '../models/User.js'
 import Project from "../models/Project.js"
 import Comment from "../models/Comment.js"
+import Event from "../models/Event.js"
 import { StatusCodes } from 'http-status-codes'
 import {BadRequestError, NotFoundError} from '../errors/index.js'
 import checkPermissions from "../utils/checkPermissions.js"
@@ -433,6 +434,46 @@ const editproject =async(req,res) =>{
     } 
 }
 
+const addEvent =async(req,res) =>{
+    const {date,event} = req.body
+    if(!date||!event){ throw new BadRequestError('Please provide all values')}
+    const eventAlreadyExists = await Event.findOne({event})
+    if(eventAlreadyExists) {throw new BadRequestError('This event already exists')}
+    try{
+        const new_event = await Event.create({event,date,createdBy:req.user.userId})
+        res.status(StatusCodes.CREATED).json({ msg: 'Successfuly Added New Event to DB'})
+    } catch(error){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
+    }
+}
+
+const getEvent = async(req,res) => {
+    try {
+    const response = await Event.find({})
+    const events = response.map((item) => ({
+        event: item.event,
+        date: item.date,
+    }))
+    res.status(StatusCodes.OK).json({events,totalEvents:events.length})
+    }catch(error){
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
+    }   
+}
+
+const deleteEvent= async(req,res) => {
+    var check = []
+    if(!req.body) {throw new BadRequestError('You must select an article')}
+    for (const niv in req.body){ check.push(req.body[niv]) }
+    if(check.length === 0 ) {throw new BadRequestError('You must select an event')}
+    try{
+        await Event.deleteMany({'event':{'$in':check}})
+        res.status(StatusCodes.OK).json({msg:'Successfuly deleted Event'})
+    } catch(error){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
+     }
+}
+
 export {createComment,getAllExco, updateJob, updateComment,sendEmail,deleteComment,addLeader,addProject,
-    addImage,getAllImages,addNews,getNews,getAllMembers,deleteNews,getComments,getProject,editproject,deleteProject,
+    addImage,getAllImages,addNews,getNews,getAllMembers,deleteNews,getComments,getProject,editproject,
+    deleteProject,addEvent,getEvent,deleteEvent,
 }
