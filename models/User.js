@@ -99,14 +99,16 @@ const DUserSchema = new mongoose.Schema({
         type:Boolean,
         default:false,
     },
+    resetPasswordToken: {type:String},
+    resetPasswordExpires: {type:Date},
 })
 
 DUserSchema.pre('save',async function(){
-    //console.log('PATHS',this.password)
     if(!this.isModified('password')) return
     const salt =await bcrypt.genSalt(10)
     this.password = await bcrypt.hash(this.password,salt)
 })
+
 
 DUserSchema.methods.createJWT = function(){
     return jwt.sign({userId:this._id},process.env.JWT_SECRET,
