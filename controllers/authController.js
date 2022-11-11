@@ -4,6 +4,8 @@ import { StatusCodes } from 'http-status-codes'
 import {BadRequestError, UnAuthenticatedError} from '../errors/index.js'
 import cloudinary from '../utils/cloudinarySetup.js'
 import passwordValidator from 'password-validator'
+import crypto from 'crypto';
+import  nodemailer from 'nodemailer'
 
 const register = async(req,res) => {
     const {fname,lname,email,password} = req.body
@@ -51,6 +53,74 @@ const register = async(req,res) => {
 //res.send('User logged in NO')
 }
 
+const sendResetEmail =async(email,token) =>{
+    const client = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+            user: "dellssaadiaspora@gmail.com",
+            pass: process.env.GMAILPASSWORD
+        },
+        tls: {rejectUnauthorized: false}
+    });
+    
+    try{
+        client.sendMail(
+            {
+                from: 'Admin',
+                to: email,
+                subject: 'PIN To Reset Password',
+                text:
+                  'You are receiving this email because you (or someone else) requested a password reset.\n\n'
+                  + 'Please copy this secure pin in the cofirmation field within one hour of receiving it:\n\n'
+                  + `PIN:${token}\n\n`
+                  + 'If you did not request this, please ignore this email and your password will remain unchanged.\n',
+            }
+        )
+        return true
+    }catch(error){
+        throw new BadRequestError('Cant send email')
+    }
+
+}    
+
+const valPassword = async(req,res) => {
+    const{email,password,token} = req.body
+    const user = await User.findOne({email})
+    if(! user) {throw new BadRequestError('This is not a registered email')}
+    if(user.resetPasswordToken !== token) {throw new BadRequestError('Invalid recovery PIN')}
+    const currentD = new Date().getTime();
+    const diff = currentD - user.resetPasswordExpires
+    if(diff > 3600000) {throw new BadRequestError('Recovery PIN Expired, Please generate a new one')}
+    var passwordCondition = new passwordValidator()
+    passwordCondition.is().min(6).is().max(100).has().uppercase().has().lowercase().has().digits(1).has().not().spaces()
+    if(!passwordCondition.validate(password)){throw new BadRequestError('password must be minimum of 6 characters,no space,must contain a lower,upper case character and digit') }
+    try{
+        user.password = password
+        user.resetPasswordToken = '',
+        await user.save()
+        res.status(StatusCodes.OK).json({ msg: 'Successfuly updated password'})
+    }catch(error){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
+    }
+}
+
+const forgotPassword = async(req,res) => {
+    const {email} = req.body
+    const userAlreadyExists = await User.findOne({email})
+    if(! userAlreadyExists) {throw new BadRequestError('This is not a registered email')}
+    const token = crypto.randomBytes(10).toString('hex')
+    try{
+        await sendResetEmail(email,token)
+        userAlreadyExists.resetPasswordToken = token,
+        userAlreadyExists.resetPasswordExpires = new Date().getTime(),
+        await userAlreadyExists.save()
+        
+        res.status(StatusCodes.OK).json({ msg: 'Successfuly sent recovery email'})
+    }catch(error){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
+    }
+}
+
 const login = async(req,res) => {
     const {email,password} = req.body
     //console.log('INPUT',email,password)
@@ -61,6 +131,7 @@ const login = async(req,res) => {
     if(!user){
         throw new UnAuthenticatedError('Invalid credentials')
     }
+    
     const isPasswordCorrect = await user.comparePassword(password)
     if(!isPasswordCorrect){
         throw new UnAuthenticatedError('Invalid credentials')
@@ -184,4 +255,5 @@ const updateUsersImage = async(req,res) => {
     }     
 //res.send('User Image Added')
 }
-export {register, login, updateUser,updateUsersImage,getBday,addNewUserToDB,makeAUserAdmin}
+export {register, login, updateUser,updateUsersImage,getBday,addNewUserToDB,makeAUserAdmin,
+    forgotPassword,valPassword}
