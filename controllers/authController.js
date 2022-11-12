@@ -68,12 +68,12 @@ const sendResetEmail =async(email,token) =>{
             {
                 from: 'Admin',
                 to: email,
-                subject: 'PIN To Reset Password',
-                text:
-                  'You are receiving this email because you (or someone else) requested a password reset.\n\n'
-                  + 'Please copy this secure pin in the cofirmation field within one hour of receiving it:\n\n'
-                  + `PIN:${token}\n\n`
-                  + 'If you did not request this, please ignore this email and your password will remain unchanged.\n',
+                subject: 'Reset Password',
+                html: 
+                `<p>You are receiving this email because you (or someone else) requested a password reset.</p>
+                <p>Please copy this secure pin below in the cofirmation field within one hour of receiving it.</p>
+                <p><b>${token}</b></p>
+                <p>If you did not request this, please ignore this email and your password will remain unchanged</p>`,
             }
         )
         return true
