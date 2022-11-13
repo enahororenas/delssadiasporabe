@@ -120,7 +120,7 @@ const getAllMembers =async(req,res) =>{
         
         // setup pagination
         const page = Number(req.query.page) || 1
-        const limit = Number(req.query.limit) || 10
+        const limit = Number(req.query.limit) || 9
         const skip = (page - 1) * limit
       
         result = result.skip(skip).limit(limit)
@@ -162,13 +162,15 @@ const getNews =async(req,res) =>{
 
 const getAllImages =async(req,res) =>{
     try{
-        const { resources } = await cloudinary.search.expression('folder:Gallery').execute();
-        const urls = resources.map((file) => file.secure_url);
-
-        // setup pagination
+        const { resources } = await cloudinary.search.expression('folder:Gallery').with_field('context').execute();
         
+        const urls = resources.map((file) => ({
+        url: file.secure_url,
+        caption : file.context.caption
+        }))
+        
+        // setup pagination
         const numOfImagePage = Math.ceil(urls.length / 7)
-
         res.status(StatusCodes.OK).json({urls,totalUrls:urls.length,numOfImagePage:numOfImagePage})
     } catch(error){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: 'Could not get all images' });
@@ -330,22 +332,23 @@ const addLeader = async(req,res) => {
 }
 
 const addImage = async(req,res) => {
-    //console.log('INCOMING',req.body)
     
-    if(!req.body.image.data){ throw new BadRequestError('Please provide all values')}
+    if(!req.body.allImages || req.body.allImages.length === 0 ){ throw new BadRequestError('Please provide all values')}
     
     try {
         const urls = []
-        const {data} = req.body.image
-        const multiplePicturePromise = data.map((picture) =>
-            cloudinary.uploader.upload(picture,{  upload_preset: process.env.CLOUDINARY_GALLERY})
+        const multiplePicturePromise = req.body.allImages.map((picture) =>
+            cloudinary.uploader.upload(picture,{  upload_preset: process.env.CLOUDINARY_GALLERY,
+                context : {caption: req.body.caption},
+            })
         );        
         const imageResponses = await Promise.all(multiplePicturePromise)
         for (const res in imageResponses){ urls.push(res.secure_url)}
         res.status(StatusCodes.OK).json({url: urls})
     }  catch(error){ 
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: 'Could not upload image' });
-    }      
+    }
+
 //res.send('User Image Added')
 }
 
