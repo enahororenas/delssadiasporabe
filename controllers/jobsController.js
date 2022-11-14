@@ -476,7 +476,14 @@ const deleteEvent= async(req,res) => {
      }
 }
 
+const updateNotification = async(req,res)=> {
+    const user = await User.findOne({_id:req.user.userId})
+    user.read=req.body.totalNews
+    await user.save()
+    res.status(StatusCodes.OK).json({user})
+}
+
 export {createComment,getAllExco, updateJob, updateComment,sendEmail,deleteComment,addLeader,addProject,
     addImage,getAllImages,addNews,getNews,getAllMembers,deleteNews,getComments,getProject,editproject,
-    deleteProject,addEvent,getEvent,deleteEvent,
+    deleteProject,addEvent,getEvent,deleteEvent,updateNotification,
 }
