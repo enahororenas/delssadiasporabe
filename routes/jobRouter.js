@@ -1,7 +1,7 @@
 import express from 'express'
 import {createComment,sendEmail,addImage,getAllImages,updateComment,deleteComment,addLeader,getAllExco,
     addNews,getNews,getAllMembers,deleteNews,getComments,addProject,getProject,editproject,deleteProject,
-    addEvent,getEvent,deleteEvent,
+    addEvent,getEvent,deleteEvent,updateNotification,
 } from '../controllers/jobsController.js'
 const router = express.Router()
 router.route('/sendemail').post(sendEmail)
@@ -19,5 +19,7 @@ router.route('/editproject').post(editproject)
 router.route('/deleteproject').post(deleteProject)
 router.route('/addevent').post(addEvent).get(getEvent)
 router.route('/deleteevent').post(deleteEvent)
+router.route('/updatenotification').post(updateNotification)
+
 
 export default router
