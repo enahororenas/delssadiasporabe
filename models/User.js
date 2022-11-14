@@ -48,21 +48,13 @@ const DUserSchema = new mongoose.Schema({
         maxlength:500,
         default:''
     },
-    company:{
-        type:String,
-        maxlength:500,
-        default:'',
-        trim:true,
+    read:{
+        type:Number,
+        default:0,
     },
     occupation:{
         type:String,
         maxlength:500,
-        default:'',
-        trim:true,
-    },
-    position:{
-        type:String,
-        maxlength:100,
         default:'',
         trim:true,
     },
