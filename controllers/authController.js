@@ -171,12 +171,13 @@ const makeAUserAdmin=async(req,res)=>{
 }
 
 const updateUser = async(req,res) => {
-    const {email,fname,lname,location,occupation,house,teacher,subject,yog,bday} = req.body
-    //console.log('IN SERVER UPDATE USER',bday)
+    const {email,fname,lname,location,occupation,house,teacher,subject,yog,bday,ann} = req.body
+    //console.log('IN SERVER UPDATE USER',ann)
 
     if(!email || !fname ||!lname||!location||!occupation||!house||!teacher||!subject||!yog||!bday){
         throw new BadRequestError('Please provide all values')
     }
+  
     const user = await User.findOne({_id:req.user.userId})
     user.occupation=occupation
     user.email = email
@@ -189,11 +190,48 @@ const updateUser = async(req,res) => {
     user.teacher=teacher
     user.subject=subject
     user.yog=yog
+    if(ann) {user.ann = ann}
     await user.save()
     const token = user.createJWT()
     //console.log('UPDATE USER FINISHED')
     res.status(StatusCodes.OK).json({user,token,location:user.location})
+
     //res.send('User OKRRR')
+}
+
+const getAnn = async(req,res) => {
+    const dt = new Date();
+    const currentDate = dt.toISOString().slice(5, 10)
+    const now = parseInt(currentDate.split("-").pop())
+    const currentMonth = dt.toISOString().slice(5, 7)
+
+    try {
+    const allAnn = await User.find({ ann: new RegExp(currentDate+'$') })
+    const allMonth = await User.find({ ann: new RegExp('-'+currentMonth+'-') })
+
+    //console.log('ANN',allAnn,allMonth)
+
+    const monthly = []
+    if(allMonth.length > 0){
+        for (const niv in allMonth){ 
+            const day = parseInt(allMonth[niv].ann.split("-").pop())
+            if(day > now){
+                monthly.push({
+                    fname:allMonth[niv].fname,
+                    lname:allMonth[niv].lname,
+                    day:day
+                }) 
+            }
+        }
+    }    
+
+        const ann = allAnn.map((file) => ({
+            fname:file.fname,
+            lname:file.lname
+        }))
+        
+        res.status(StatusCodes.OK).json({ann,totalAnn:allAnn.length,monthly,totalMonthly:monthly.length})  
+    } catch(error) {res.status(StatusCodes.OK).json({ann:[],totalAnn:0,monthly:0,totalMonthly:0})}
 }
 
 const getBday = async(req,res) => {
@@ -256,4 +294,4 @@ const updateUsersImage = async(req,res) => {
 //res.send('User Image Added')
 }
 export {register, login, updateUser,updateUsersImage,getBday,addNewUserToDB,makeAUserAdmin,
-    forgotPassword,valPassword}
+    forgotPassword,valPassword,getAnn}
