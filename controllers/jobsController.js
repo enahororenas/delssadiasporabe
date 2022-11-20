@@ -434,6 +434,7 @@ const getProject =async(req,res) =>{
         completed: item.completed,
         unit:item.unit,
         total:item.total,
+        donor:item.donor,
     }))
     res.status(StatusCodes.OK).json({projects,totalProject:projects.length})
     }catch(error){
@@ -456,13 +457,14 @@ const deleteProject =async(req,res) =>{
 }
 
 const editproject =async(req,res) =>{
-    const {topic,completed,total,unit} = req.body
+    const {topic,completed,total,unit,donor} = req.body
     if(!topic||!completed||!total||!unit){ throw new BadRequestError('Please provide all values')}
     const projectAlreadyExists = await Project.findOne({topic})
     if(!projectAlreadyExists) {throw new BadRequestError('This project does not exist')}
     projectAlreadyExists.completed = completed
     projectAlreadyExists.unit = unit
     projectAlreadyExists.total = total
+    projectAlreadyExists.donor = donor
     try{
         await projectAlreadyExists.save()
         res.status(StatusCodes.CREATED).json({ msg: 'Successfuly Updated Project'})
