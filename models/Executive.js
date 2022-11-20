@@ -18,6 +18,10 @@ const ExcoSchema = new mongoose.Schema({
         type: String,
         default:'',
     }, 
+    pos:{
+        type: String,
+        default:'',
+    }, 
     createdBy:{
         type: mongoose.Types.ObjectId,
         required: [true,'please provide User'],
