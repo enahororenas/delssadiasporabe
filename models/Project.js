@@ -15,6 +15,10 @@ const ProjectSchema = new mongoose.Schema({
         type: String,
         default:'',
     }, 
+    donor:{
+        type: String,
+        default:'',
+    }, 
     total:{
         type: String,
         default:'',
