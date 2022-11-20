@@ -87,6 +87,11 @@ const DUserSchema = new mongoose.Schema({
         maxlength:500,
         default:''
     },
+    ann:{
+        type:String,
+        maxlength:500,
+        default:''
+    },
     admin:{
         type:Boolean,
         default:false,
