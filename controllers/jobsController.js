@@ -177,8 +177,21 @@ const getAllImages =async(req,res) =>{
     }  
 }
 
+const getAllPres =async(req,res) =>{
+    try {const response = await Exco.find({pos:'pres'})
+    const exPresident = response.map((mem) => ({
+        name: mem.name,
+        url: mem.url,
+    }))
+    res.status(StatusCodes.OK).json({exPresident,totalExPres:exPresident.length})
+    }catch(error){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
+    }
+}
+
+
 const getAllExco =async(req,res) =>{
-    try {const response = await Exco.find({})
+    try {const response = await Exco.find({pos:'lead'})
     const excoMembers = response.map((mem) => ({
         name: mem.name,
         url: mem.url,
@@ -306,8 +319,28 @@ const sendEmail =async(req,res) =>{
     //res.send('show stats')
 }
 
+const addPres = async(req,res) => {
+    const {pres,image,pos} = req.body
+    //console.log(req.body)
+    if(!pres || !image){ throw new BadRequestError('Please provide all values')}
+    try {    
+    const response = await cloudinary.uploader.upload(image,{  upload_preset: process.env.CLOUDINARY_EXCO})
+    const item = {
+        title: 'Past President',
+        name : pres,
+        url : response.secure_url,
+        createdBy:req.user.userId,
+        public_id: response.public_id,
+        pos:pos
+    }
+    const leader = await Exco.create(item)
+    res.status(StatusCodes.CREATED).json({leader})
+    }  catch(error){ 
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: 'Could not Add Ex President' });
+    }
+}    
 const addLeader = async(req,res) => {
-    const {Title,Name,image} = req.body
+    const {Title,Name,image,pos} = req.body
     if(!Title || !Name || !image){ throw new BadRequestError('Please provide all values')}
     
     try {
@@ -323,6 +356,7 @@ const addLeader = async(req,res) => {
         url : response.secure_url,
         createdBy:req.user.userId,
         public_id: response.public_id,
+        pos:pos
     }
     const leader = await Exco.create(item)
     res.status(StatusCodes.CREATED).json({leader})
@@ -485,5 +519,5 @@ const updateNotification = async(req,res)=> {
 
 export {createComment,getAllExco, updateJob, updateComment,sendEmail,deleteComment,addLeader,addProject,
     addImage,getAllImages,addNews,getNews,getAllMembers,deleteNews,getComments,getProject,editproject,
-    deleteProject,addEvent,getEvent,deleteEvent,updateNotification,
+    deleteProject,addEvent,getEvent,deleteEvent,updateNotification,addPres,getAllPres,
 }
