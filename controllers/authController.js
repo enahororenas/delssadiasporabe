@@ -27,7 +27,10 @@ const register = async(req,res) => {
         ] })
         
     //console.log(validUser.email)   
-    if(!validUser){throw new BadRequestError('You must be a member of DELSSAA')}    
+    if(!validUser){
+        console.log('NOT ADDED YET',email)
+        throw new BadRequestError('You must be a member of DELSSAA')
+    }    
    
     const userAlreadyExists = await User.findOne({email})
     if(userAlreadyExists) {throw new BadRequestError('Email already used')}
@@ -129,6 +132,7 @@ const login = async(req,res) => {
 
     const user = await User.findOne({email}).select('+password')
     if(!user){
+        console.log('Invalid credentials',email)
         throw new UnAuthenticatedError('Invalid credentials')
     }
     
