@@ -29,7 +29,7 @@ const register = async(req,res) => {
     //console.log(validUser.email)   
     if(!validUser){
         console.log('NOT ADDED YET',email)
-        throw new BadRequestError('You must be a member of DELSSAA')
+        throw new BadRequestError('You must be a member of DELSSAA DIASPORA')
     }    
    
     const userAlreadyExists = await User.findOne({email})
@@ -126,12 +126,13 @@ const forgotPassword = async(req,res) => {
 
 const login = async(req,res) => {
     const {email,password} = req.body
-    //console.log('INPUT',email,password)
+    
     if(!email){ throw new BadRequestError('Please provide email') }
     if(!password){ throw new BadRequestError('Please provide your password') }
 
     const user = await User.findOne({email}).select('+password')
     if(!user){
+        console.log('not registered but trying to login',email)
         console.log('Invalid credentials',email)
         throw new UnAuthenticatedError('Invalid credentials')
     }
