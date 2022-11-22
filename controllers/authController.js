@@ -19,12 +19,12 @@ const register = async(req,res) => {
     passwordCondition.is().min(6).is().max(100).has().uppercase().has().lowercase().has().digits(1).has().not().spaces()
     if(!passwordCondition.validate(password)){throw new BadRequestError('password must be minimum of 6 characters,no space,must contain a lower,upper case character and digit') }
 
-    console.log('find',fname,lname,email)
+    console.log('find',fname,lname,email.toLowerCase())
 
     const validUser = await MainDB.findOne({ 
         $and: [
         {lname: new RegExp(lname, 'i')}, 
-        { email: { $eq: email } },
+        { email:  email.toLowerCase()  },
         {fname: new RegExp(fname, 'i')}
         ] })
         
