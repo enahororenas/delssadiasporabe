@@ -6,7 +6,7 @@ import connectDB from './db/connect.js'
 import authRouter from './routes/authRoutes.js'
 import jobRouter from './routes/jobRouter.js'
 import 'express-async-errors'
-//import http from 'http'
+import axios from 'axios'
 
 //import morgan from 'morgan'
 import authenticateUser from './middleware/auth.js'
@@ -47,7 +47,10 @@ app.use('/api/dias/comment',authenticateUser,jobRouter)
 app.use('/api/dias/project',authenticateUser,jobRouter)
 app.use('/api/dias/event',authenticateUser,jobRouter)
 
-
+app.get("/keep-alive",(req,res)=>{ 
+    //console.log(req.protocol+"://"+req.headers.host+req.originalUrl)
+    res.send('Alive & Well')
+})
 
 app.use(notFoundMiddleware)
 //error in any of the routes function
@@ -55,11 +58,17 @@ app.use(errorHandlerMiddleware)
 
 const port = process.env.PORT || 5000
 
-//setInterval(function() {
-    //console.log('Keep alive',curl)
-//    http.get(process.env.BE_URL);
-//}, 300000); // every 5 minutes (300000)
 
+const keepAlive = async()=> {
+    try{
+        const res = await axios.get(process.env.BE_URL+'/keep-alive');
+        //console.log(res.data)
+    }  catch(error){
+        console.log('*****ALERT:: Keep Alive is DEAD******')
+    }  
+}
+
+setInterval(keepAlive, 300000);
 
 
 const start = async() => {
