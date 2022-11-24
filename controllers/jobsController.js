@@ -191,13 +191,96 @@ const getAllPres =async(req,res) =>{
 
 
 const getAllExco =async(req,res) =>{
-    try {const response = await Exco.find({pos:'lead'})
-    const excoMembers = response.map((mem) => ({
-        name: mem.name,
-        url: mem.url,
-        title:mem.title,
-    }))
-    res.status(StatusCodes.OK).json({excoMembers,totalExco:excoMembers.length})
+    try {
+        const response = await Exco.find({pos:'lead'})
+        
+        const excoMembers = []
+        if (response){
+            const ch1 = response.filter(mem => mem.title === 'Chairman')
+            const ch2 = response.filter(mem => mem.title === 'Vice-Chairman')
+            excoMembers.push({
+                    name: ch1[0].name,
+                    url: ch1[0].url,
+                    title:ch1[0].title,
+                })
+            excoMembers.push({
+                    name: ch2[0].name,
+                    url: ch2[0].url,
+                    title:ch2[0].title,
+                })   
+            for (const mem in response) {
+                if(response[mem].title !== 'Chairman' && response[mem].title !== 'Vice-Chairman'){
+                    excoMembers.push({
+                        name: response[mem].name,
+                        url:  response[mem].url,
+                        title:response[mem].title,
+                    })  
+                }
+            } 
+        }
+
+    const proj_res = await Exco.find({pos:'Project'})  
+    const projMembers = []  
+    if (proj_res){    
+        const ch1 = proj_res.filter(mem => mem.title === 'Chairman')
+        projMembers.push({
+            name: ch1[0].name,
+            url: ch1[0].url,
+            title:ch1[0].title,
+        })
+        for (const mem in proj_res) {
+            if(proj_res[mem].title !== 'Chairman'){
+                projMembers.push({
+                    name: proj_res[mem].name,
+                    url:  proj_res[mem].url,
+                    title:proj_res[mem].title,
+                })  
+            }
+        } 
+    }
+
+    const media = await Exco.find({pos:'Media'})  
+    const mediaMembers = []  
+    if (media){    
+        const ch1 = media.filter(mem => mem.title === 'Chairman')
+        const ch2 = media.filter(mem => mem.title === 'Vice Chairman')
+        const ch3 = media.filter(mem => mem.title === 'Secretary')
+
+        mediaMembers.push({
+            name: ch1[0].name,
+            url: ch1[0].url,
+            title:ch1[0].title,
+        })
+        mediaMembers.push({
+            name: ch2[0].name,
+            url: ch2[0].url,
+            title:ch2[0].title,
+        })
+        mediaMembers.push({
+            name: ch3[0].name,
+            url: ch3[0].url,
+            title:ch3[0].title,
+        })
+
+        for (const mem in media) {
+            if(media[mem].title !== 'Chairman' && media[mem].title !== 'Vice Chairman' && media[mem].title !== 'Secretary'){
+                mediaMembers.push({
+                    name: media[mem].name,
+                    url:  media[mem].url,
+                    title:media[mem].title,
+                })  
+            }
+        } 
+    }
+
+    res.status(StatusCodes.OK).json({
+        excoMembers,
+        totalExco:excoMembers.length,
+        projMembers,
+        totalProject:projMembers.length,
+        mediaMembers,
+        totalMedia:mediaMembers.length,
+    })
     }catch(error){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
     }
@@ -344,7 +427,7 @@ const addLeader = async(req,res) => {
     if(!Title || !Name || !image){ throw new BadRequestError('Please provide all values')}
     
     try {
-        const exist = await Exco.findOne({title:Title})
+        const exist = await Exco.findOne({title:Title,pos:pos})
         if(exist) {
             const del_response = await cloudinary.uploader.destroy(exist.public_id)
             await exist.remove()
