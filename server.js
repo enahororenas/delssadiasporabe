@@ -6,10 +6,12 @@ import connectDB from './db/connect.js'
 import authRouter from './routes/authRoutes.js'
 import jobRouter from './routes/jobRouter.js'
 import 'express-async-errors'
-import morgan from 'morgan'
+import http from 'http'
+
+//import morgan from 'morgan'
 import authenticateUser from './middleware/auth.js'
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
+//import { dirname } from 'path'
+//import { fileURLToPath } from 'url'
 import path from 'path'
 import cors from 'cors'
 dotenv.config()
@@ -33,6 +35,7 @@ app.use(express.json({limit: '50mb'}))
 
 //app.get('/',(req,res)=>{ res.send('WELCOME HOME!')})
 
+
 app.use('/api/dias/auth',authRouter)
 app.use('/api/dias/user',authenticateUser,jobRouter)
 app.use('/api/dias/email',authenticateUser,jobRouter)
@@ -45,11 +48,21 @@ app.use('/api/dias/project',authenticateUser,jobRouter)
 app.use('/api/dias/event',authenticateUser,jobRouter)
 
 
+
 app.use(notFoundMiddleware)
 //error in any of the routes function
 app.use(errorHandlerMiddleware)
 
 const port = process.env.PORT || 5000
+
+setInterval(function() {
+    //const curl = req.protocol+"://"+req.headers.host
+    const curl = 'http://localhost:5000'
+    //console.log('Keep alive',curl)
+    http.get(curl);
+}, 60000); // every 5 minutes (300000)
+
+
 
 const start = async() => {
     try {
