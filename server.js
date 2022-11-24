@@ -56,11 +56,9 @@ app.use(errorHandlerMiddleware)
 const port = process.env.PORT || 5000
 
 setInterval(function() {
-    //const curl = req.protocol+"://"+req.headers.host
-    const curl = 'http://localhost:5000'
     //console.log('Keep alive',curl)
-    http.get(curl);
-}, 60000); // every 5 minutes (300000)
+    http.get(process.env.BE_URL);
+}, 300000); // every 5 minutes (300000)
 
 
 
