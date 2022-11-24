@@ -68,7 +68,7 @@ const keepAlive = async()=> {
     }  
 }
 
-setInterval(keepAlive, 300000);
+setInterval(keepAlive, 600000);
 
 
 const start = async() => {
