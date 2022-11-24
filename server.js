@@ -6,7 +6,7 @@ import connectDB from './db/connect.js'
 import authRouter from './routes/authRoutes.js'
 import jobRouter from './routes/jobRouter.js'
 import 'express-async-errors'
-import http from 'http'
+//import http from 'http'
 
 //import morgan from 'morgan'
 import authenticateUser from './middleware/auth.js'
