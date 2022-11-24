@@ -1,7 +1,7 @@
 import { UnAuthenticatedError } from "../errors/index.js"
 import jwt from "jsonwebtoken"
 const auth = async(req,res,next) => {
-    console.log(req.originalUrl)
+    console.log(req.protocol+"://"+req.headers.host+req.originalUrl)
     const authHeader = req.headers.authorization
     // /console.log('Auth Middle ware ERROR Called')
    // console.log('Auth User in Middle ware Called',authHeader)
