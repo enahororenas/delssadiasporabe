@@ -273,6 +273,34 @@ const getAllExco =async(req,res) =>{
         } 
     }
 
+    const welfare = await Exco.find({pos:'welfare'})  
+    const welfareMembers = []  
+    if (welfare){    
+        const ch1 = welfare.filter(mem => mem.title === 'Chairman')
+        const ch3 = welfare.filter(mem => mem.title === 'Secretary')
+
+        welfareMembers.push({
+            name: ch1[0].name,
+            url: ch1[0].url,
+            title:ch1[0].title,
+        })
+        welfareMembers.push({
+            name: ch3[0].name,
+            url: ch3[0].url,
+            title:ch3[0].title,
+        })
+
+        for (const mem in welfare) {
+            if(welfare[mem].title !== 'Chairman' && welfare[mem].title !== 'Secretary'){
+                welfareMembers.push({
+                    name: welfare[mem].name,
+                    url:  welfare[mem].url,
+                    title:welfare[mem].title,
+                })  
+            }
+        } 
+    }
+
     res.status(StatusCodes.OK).json({
         excoMembers,
         totalExco:excoMembers.length,
@@ -280,6 +308,8 @@ const getAllExco =async(req,res) =>{
         totalProject:projMembers.length,
         mediaMembers,
         totalMedia:mediaMembers.length,
+        welfareMembers,
+        totalWelfare:welfareMembers.length,
     })
     }catch(error){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
