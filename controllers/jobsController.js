@@ -198,16 +198,20 @@ const getAllExco =async(req,res) =>{
         if (response){
             const ch1 = response.filter(mem => mem.title === 'Chairman')
             const ch2 = response.filter(mem => mem.title === 'Vice-Chairman')
-            excoMembers.push({
+            if(ch1.length > 0 ){
+                excoMembers.push({
                     name: ch1[0].name,
                     url: ch1[0].url,
                     title:ch1[0].title,
                 })
+            }
+            if(ch2.length > 0 ){
             excoMembers.push({
                     name: ch2[0].name,
                     url: ch2[0].url,
                     title:ch2[0].title,
-                })   
+                })
+            }   
             for (const mem in response) {
                 if(response[mem].title !== 'Chairman' && response[mem].title !== 'Vice-Chairman'){
                     excoMembers.push({
@@ -223,11 +227,13 @@ const getAllExco =async(req,res) =>{
     const projMembers = []  
     if (proj_res){    
         const ch1 = proj_res.filter(mem => mem.title === 'Chairman')
+        if(ch1.length > 0 ){
         projMembers.push({
             name: ch1[0].name,
             url: ch1[0].url,
             title:ch1[0].title,
-        })
+            })
+        }
         for (const mem in proj_res) {
             if(proj_res[mem].title !== 'Chairman'){
                 projMembers.push({
@@ -246,22 +252,27 @@ const getAllExco =async(req,res) =>{
         const ch2 = media.filter(mem => mem.title === 'Vice Chairman')
         const ch3 = media.filter(mem => mem.title === 'Secretary')
 
+        if(ch1.length > 0 ){
         mediaMembers.push({
             name: ch1[0].name,
             url: ch1[0].url,
             title:ch1[0].title,
-        })
+            })
+        }
+        if(ch2.length > 0 ){
         mediaMembers.push({
             name: ch2[0].name,
             url: ch2[0].url,
             title:ch2[0].title,
-        })
+            })
+        }
+        if(ch3.length > 0 ){
         mediaMembers.push({
             name: ch3[0].name,
             url: ch3[0].url,
             title:ch3[0].title,
-        })
-
+            })
+        }    
         for (const mem in media) {
             if(media[mem].title !== 'Chairman' && media[mem].title !== 'Vice Chairman' && media[mem].title !== 'Secretary'){
                 mediaMembers.push({
@@ -278,18 +289,20 @@ const getAllExco =async(req,res) =>{
     if (welfare){    
         const ch1 = welfare.filter(mem => mem.title === 'Chairman')
         const ch3 = welfare.filter(mem => mem.title === 'Secretary')
-
+        if(ch1.length > 0 ){
         welfareMembers.push({
             name: ch1[0].name,
             url: ch1[0].url,
             title:ch1[0].title,
-        })
+            })
+        }
+        if(ch3.length > 0 ){
         welfareMembers.push({
             name: ch3[0].name,
             url: ch3[0].url,
             title:ch3[0].title,
-        })
-
+         })
+        }
         for (const mem in welfare) {
             if(welfare[mem].title !== 'Chairman' && welfare[mem].title !== 'Secretary'){
                 welfareMembers.push({
@@ -312,6 +325,7 @@ const getAllExco =async(req,res) =>{
         totalWelfare:welfareMembers.length,
     })
     }catch(error){
+        console.log('error',error)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
     }
 }
