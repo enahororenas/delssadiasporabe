@@ -325,7 +325,7 @@ const getAllExco =async(req,res) =>{
         totalWelfare:welfareMembers.length,
     })
     }catch(error){
-        console.log('error',error)
+        //console.log('error',error)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
     }
 }
