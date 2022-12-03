@@ -67,8 +67,8 @@ const keepAlive = async()=> {
         console.log('*****ALERT:: Keep Alive is DEAD******')
     }  
 }
-
-setInterval(keepAlive,3600000);
+setInterval(keepAlive,600000);
+//setInterval(keepAlive,3600000);
 
 
 const start = async() => {
