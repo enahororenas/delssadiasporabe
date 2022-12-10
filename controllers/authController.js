@@ -23,9 +23,9 @@ const register = async(req,res) => {
 
     const validUser = await MainDB.findOne({ 
         $and: [
-        {lname: new RegExp(lname, 'i')}, 
-        { email:  email  },
-        {fname: new RegExp(fname, 'i')}
+        {lname: new RegExp(lname.trim(), 'i')}, 
+        { email:  email.trim()  },
+        {fname: new RegExp(fname.trim(), 'i')}
         ] })
         
     //console.log(validUser.email)   
