@@ -143,7 +143,7 @@ const getAllMembers =async(req,res) =>{
         //position:user.position
         //company:user.company,
     }))
-    console.log(totalMembers,response.length)
+    //console.log(totalMembers,response.length)
     res.status(StatusCodes.OK).json({members,totalMembers,numOfPages})
     }  catch(error){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: 'Could not get all members' });
@@ -412,7 +412,7 @@ const sendEmail =async(req,res) =>{
     await client.sendMail(
         {
             from: name,
-            to: "dellssaadiaspora@gmail.com",
+            to: "dellssaadiaspora@gmail.com;diaspora@delssaa.org",
             subject: "DELSSAA DIASPORA CONTACT US FORM",
             text: `
             Name: ${name}
