@@ -8,7 +8,8 @@ import crypto from 'crypto';
 import  nodemailer from 'nodemailer'
 
 const wakeUp = async(req,res)=>{
-    console.log(req.protocol+"://"+req.headers.host+req.originalUrl,'WAKEUP')
+    //console.log(req.protocol+"://"+req.headers.host+req.originalUrl,'WAKEUP')
+    console.log('WAKEUP',req.body)
     res.status(StatusCodes.OK).json({ msg: 'Successfuly Woke the System up'})
 }
 
