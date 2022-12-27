@@ -4,6 +4,7 @@ import User from '../models/User.js'
 import Project from "../models/Project.js"
 import Comment from "../models/Comment.js"
 import Event from "../models/Event.js"
+import Gallery from "../models/Gallery.js"
 import { StatusCodes } from 'http-status-codes'
 import {BadRequestError, NotFoundError} from '../errors/index.js'
 import checkPermissions from "../utils/checkPermissions.js"
@@ -142,6 +143,7 @@ const getAllMembers =async(req,res) =>{
         //position:user.position
         //company:user.company,
     }))
+    console.log(totalMembers,response.length)
     res.status(StatusCodes.OK).json({members,totalMembers,numOfPages})
     }  catch(error){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: 'Could not get all members' });
@@ -162,13 +164,14 @@ const getNews =async(req,res) =>{
 
 const getAllImages =async(req,res) =>{
     try{
-        const { resources } = await cloudinary.search.expression('folder:Gallery').with_field('context').execute();
-        
-        const urls = resources.map((file) => ({
-        url: file.secure_url,
-        caption : file.context.caption
+        //const { resources } = await cloudinary.search.expression('folder:Gallery').with_field('context').execute();
+        const resources = await Gallery.find({})
+
+        const urls = resources.map((file) => ({ 
+        url: file.url,
+        caption : file.caption
         }))
-        
+
         // setup pagination
         const numOfImagePage = Math.ceil(urls.length / 7)
         res.status(StatusCodes.OK).json({urls,totalUrls:urls.length,numOfImagePage:numOfImagePage})
@@ -504,7 +507,16 @@ const addImage = async(req,res) => {
             })
         );        
         const imageResponses = await Promise.all(multiplePicturePromise)
-        for (const res in imageResponses){ urls.push(res.secure_url)}
+
+        for (const res in imageResponses){ 
+            await Gallery.create({
+                url:imageResponses[res].secure_url,
+                public_id:imageResponses[res].public_id,
+                caption:imageResponses[res].context.custom.caption,
+                createdBy:req.user.userId})
+            urls.push(imageResponses[res].secure_url)
+        }
+        
         res.status(StatusCodes.OK).json({url: urls})
     }  catch(error){ 
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: 'Could not upload image' });
