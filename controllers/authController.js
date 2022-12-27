@@ -7,6 +7,11 @@ import passwordValidator from 'password-validator'
 import crypto from 'crypto';
 import  nodemailer from 'nodemailer'
 
+const wakeUp = async(req,res)=>{
+    console.log(req.protocol+"://"+req.headers.host+req.originalUrl,'WAKEUP')
+    res.status(StatusCodes.OK).json({ msg: 'Successfuly Woke the System up'})
+}
+
 const register = async(req,res) => {
     const {fname,lname,email,password} = req.body
 
@@ -301,4 +306,4 @@ const updateUsersImage = async(req,res) => {
 //res.send('User Image Added')
 }
 export {register, login, updateUser,updateUsersImage,getBday,addNewUserToDB,makeAUserAdmin,
-    forgotPassword,valPassword,getAnn}
+    forgotPassword,valPassword,getAnn,wakeUp}
