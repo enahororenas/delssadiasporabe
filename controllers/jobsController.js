@@ -102,11 +102,12 @@ const getComments =async(req,res) =>{
 
 
 const getAllMembers =async(req,res) =>{
-    const { search } = req.query
-    //console.log('QRY',req.query,' = ',search)
+    const { country, sort,search } = req.query
+    //console.log('QRY INPUT',req.query,' = ',country, sort,search)
 
     try{   
       var queryObject
+       
       if (!search || search === '') {  queryObject = {}}
       else {
         queryObject = {
@@ -116,8 +117,15 @@ const getAllMembers =async(req,res) =>{
                 ] 
           }
       }
+
+      if (country && country !== 'ALL') {queryObject.country = country}  
       
         let result = User.find(queryObject)
+        
+        if (sort === 'latest') { result = result.sort({_id:-1})}
+        if (sort === 'oldest') {result = result.sort({_id:1})}
+        if (sort === 'a-z') {result = result.sort('fname')}
+        if (sort === 'z-a') {result = result.sort('-fname')}
         
         // setup pagination
         const page = Number(req.query.page) || 1
