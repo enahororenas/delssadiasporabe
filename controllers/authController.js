@@ -184,21 +184,20 @@ const makeAUserAdmin=async(req,res)=>{
 }
 
 const updateUser = async(req,res) => {
-    const {email,fname,lname,location,occupation,house,teacher,subject,yog,bday,ann} = req.body
+    const {email,fname,lname,location,occupation,house,teacher,subject,yog,bday,ann,country} = req.body
     //console.log('IN SERVER UPDATE USER',ann)
 
-    if(!email || !fname ||!lname||!location||!occupation||!house||!teacher||!subject||!yog||!bday){
+    if(!fname ||!lname||!location||!occupation||!house||!teacher||!subject||!yog||!bday||!country){
         throw new BadRequestError('Please provide all values')
     }
   
     const user = await User.findOne({_id:req.user.userId})
     user.occupation=occupation
-    user.email = email
     user.fname = fname
     user.lname=lname
     user.location=location
     user.bday=bday
-    //user.company=company
+    user.country=country
     user.house=house
     user.teacher=teacher
     user.subject=subject
