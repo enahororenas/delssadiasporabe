@@ -7,16 +7,16 @@ const DUserSchema = new mongoose.Schema({
     fname:{
         type: String,
         required: [true,'please provide firstName'],
-        minlength:3,
-        maxlength:20,
+        minlength:2,
+        maxlength:30,
         trim:true,
     },
     lname:{
         type:String,
-        maxlength:20,
+        maxlength:30,
         trim:true,
         required: [true,'please provide lastName'],
-        minlength:3,
+        minlength:2,
     },
     email:{
         type:String,
@@ -35,9 +35,15 @@ const DUserSchema = new mongoose.Schema({
     },
     location:{
         type:String,
-        maxlength:20,
+        maxlength:100,
         trim:true,
         default:'my city'
+    },
+    country:{
+        type:String,
+        maxlength:500,
+        trim:true,
+        default:''
     },
     image:{
         type:String,
