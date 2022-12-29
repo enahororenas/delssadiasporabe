@@ -148,7 +148,7 @@ const getAllMembers =async(req,res) =>{
         id:user._id,
         house:user.house,
         occupation:user.occupation,
-        //position:user.position
+        country:user.country,
         //company:user.company,
     }))
     //console.log(totalMembers,response.length)
